@@ -45,11 +45,13 @@ mv ${BINARY_DIR}/ela-bootstrapd ${ELABOX_HOME}/supernode/carrier
 mv ${BINARY_DIR}/ela-bootstrapd -P ${ELABOX_HOME}/supernode/carrier
 
 # create and starts the companion
-mkdir ${ELABOX_HOME}/elabox ${ELABOX_HOME}/{server,companion}
+mkdir ${ELABOX_HOME}/{server,companion}
 
 # Install avahi-daemon
-sudo apt-get install avahi-daemon
+echo "Installing avahi-daemon..."
+echo 'Y' | sudo apt-get install avahi-daemon
 # Update hostname to elabox
+echo "Updating hostname..."
 sudo echo "elabox" > /etc/hostname
 
 # Mount external USB disk
