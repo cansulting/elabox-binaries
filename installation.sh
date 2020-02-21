@@ -8,6 +8,7 @@ ELABOX_HOME=/home/ubuntu/elabox
 # ELA_VERSION=
 # DID_VERSION=
 # CARRIER_VERSION=
+BINARY_DIR=/home/ubuntu/elabox-binaries/binaries
 
 # Format and mount the USB storage
 echo 'y' | sudo mkfs.ext4 /dev/sda
@@ -21,26 +22,27 @@ echo "UUID=${USD_UUID} /home/ubuntu/elabox/ ext4 defaults 0 0" >> /etc/fstab
 
 
 # configurations
-git config --global user.name "${GITHUB_USER}"
-git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/elabox-back-end
+# cd ${ELABOX_HOME}
+# git config --global user.name "${GITHUB_USER}"
+# git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/elabox-back-end
 
 # 1 - change SSH default port
 # 2 - create supernode and elabox directories
 mkdir ${ELABOX_HOME}/supernode ${ELABOX_HOME}/supernode/{did,ela,carrier}
 # get ela binary and config file
-wget ela -P ${ELABOX_HOME}/supernode/ela
-wget ela-cli -P ${ELABOX_HOME}/supernode/ela
+mv ${BINARY_DIR}/ela ${ELABOX_HOME}/supernode/ela
+mv ${BINARY_DIR}/ela-cli ${ELABOX_HOME}/supernode/ela
 chmod +x ${ELABOX_HOME}/supernode/ela/ela ${ELABOX_HOME}/supernode/ela/ela-cli
-wget ela_config.json -P ${ELABOX_HOME}/supernode/ela
+mv ${BINARY_DIR}/ela_config.json ${ELABOX_HOME}/supernode/ela
 mv ${ELABOX_HOME}/supernode/ela/ela_config.json ${ELABOX_HOME}/supernode/ela/config.json
 # get did binary and config file
-wget did  -P ${ELABOX_HOME}/supernode/did
+mv ${BINARY_DIR}/did ${ELABOX_HOME}/supernode/did
 chmod +x ${ELABOX_HOME}/supernode/did/did
-wget did_config.json -P ${ELABOX_HOME}/supernode/did
+mv ${BINARY_DIR}/did_config.json ${ELABOX_HOME}/supernode/did
 mv ${ELABOX_HOME}/supernode/did/did_config.json ${ELABOX_HOME}/supernode/did/config.json
 # get carrier binary and config file
-wget  -P ${ELABOX_HOME}/supernode/carrier
-wget ela-bootstrapd -P ${ELABOX_HOME}/supernode/carrier
+mv ${BINARY_DIR}/ela-bootstrapd ${ELABOX_HOME}/supernode/carrier
+mv ${BINARY_DIR}/ela-bootstrapd -P ${ELABOX_HOME}/supernode/carrier
 
 # create and starts the companion
 mkdir ${ELABOX_HOME}/elabox ${ELABOX_HOME}/{server,companion}
