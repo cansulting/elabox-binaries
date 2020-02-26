@@ -1,19 +1,25 @@
 #!/bin/bash
 echo "Installation of Elabox..."
 
-# parameters
-GITHUB_USER=ademcan
-GITHUB_TOKEN=42c8770f7a252e0b935f1e1c9feaad1c21a5e381
-ELABOX_HOME=/home/elabox
-# ELA_VERSION=
-# DID_VERSION=
-# CARRIER_VERSION=
-BINARY_DIR=/home/elabox/binaries
 
+## TO DO MANUALY 
+
+# After initiatinf the new pwd and login back to the machine
+# git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-binaries
+# -> new dir /home/ubuntu/elabox-binaries
 # Add elabox user
 sudo adduser elabox
 # Add elabox user to sudo group
 sudo usermod -aG sudo elabox
+
+
+## RUN AS SCRIPT
+
+# parameters
+GITHUB_USER=ademcan
+GITHUB_TOKEN=42c8770f7a252e0b935f1e1c9feaad1c21a5e381
+ELABOX_HOME=/home/elabox
+BINARY_DIR=/home/ubuntu/elabox-binaries/binaries
 
 # Format and mount the USB storage
 # check that USB is mounted on /dev/sda with sudo fdisk -l
@@ -23,7 +29,12 @@ sudo mount /dev/sda /home/elabox/
 # check the unique identifier of /dev/sda
 USD_UUID=$(sudo blkid | grep /dev/sda | cut -d '"' -f 2)
 # update the /etc/fstab file to auto-mount the disk on startup
-echo "UUID=${USD_UUID} /home/elabox/ ext4 defaults 0 0" >> /etc/fstab
+echo "UUID=${USD_UUID} /home/elabox/ ext4 defaults 0 0" | sudo tee -a /etc/fstab > /dev/null
+echo 'elabox' | su - elabox
+cd /home/
+sudo chown -R elabox:elabox elabox/
+cd /home/elabox
+sudo rm -rf lost+found/
 
 
 # configurations
@@ -58,7 +69,9 @@ sudo ufw allow 20604
 sudo ufw allow 20606
 # DID node port
 sudo ufw allow 20608
-sudo ufw enable
+echo 'y' | sudo ufw enable
+
+sudo cp -R /home/ubuntu/elabox-binaries .
 
 # 2 - create supernode and elabox directories
 mkdir ${ELABOX_HOME}/supernode ${ELABOX_HOME}/supernode/{did,ela,carrier}
@@ -75,6 +88,7 @@ cp ${BINARY_DIR}/did_config.json ${ELABOX_HOME}/supernode/did
 mv ${ELABOX_HOME}/supernode/did/did_config.json ${ELABOX_HOME}/supernode/did/config.json
 # get carrier binary and config file
 cp ${BINARY_DIR}/ela-bootstrapd ${ELABOX_HOME}/supernode/carrier
+chmod +x ${ELABOX_HOME}/supernode/carrier/ela-bootstrapd
 # mv ${BINARY_DIR}/ela-bootstrapd -P ${ELABOX_HOME}/supernode/carrier
 
 # create and starts the companion
