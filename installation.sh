@@ -20,6 +20,7 @@ GITHUB_USER=ademcan
 GITHUB_TOKEN=42c8770f7a252e0b935f1e1c9feaad1c21a5e381
 ELABOX_HOME=/home/elabox
 BINARY_DIR=/home/ubuntu/elabox-binaries/binaries
+SCRIPTS_DIR=/home/ubuntu/elabox-binaries
 
 # Format and mount the USB storage
 # check that USB is mounted on /dev/sda with sudo fdisk -l
@@ -44,7 +45,19 @@ sudo rm -rf lost+found/
 
 # 1 - SSH security / turn off at the end
 
-echo 'Y' | sudo apt install fail2ban avahi-daemon tar
+# add nodejs PPA
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update && sudo apt install yarn
+
+echo 'Y' | sudo apt install fail2ban avahi-daemon tar nodejs make build-essential tor nginx zip
+# sudo npm install -g n
+# sudo n 10.15.2
+# npm install -g npm@5.8.0
+# PATH="$PATH"
 
 # open the different ports with ufw
 sudo ufw default deny incoming
@@ -88,36 +101,59 @@ cp ${BINARY_DIR}/did_config.json ${ELABOX_HOME}/supernode/did
 mv ${ELABOX_HOME}/supernode/did/did_config.json ${ELABOX_HOME}/supernode/did/config.json
 # get carrier binary and config file
 cp ${BINARY_DIR}/ela-bootstrapd ${ELABOX_HOME}/supernode/carrier
+cp ${BINARY_DIR}/bootstrapd.conf ${ELABOX_HOME}/supernode/carrier
 chmod +x ${ELABOX_HOME}/supernode/carrier/ela-bootstrapd
-# mv ${BINARY_DIR}/ela-bootstrapd -P ${ELABOX_HOME}/supernode/carrier
+chmod 664 ${ELABOX_HOME}/supernode/carrier/bootstrapd.conf
+
+
+# get the scripts (carrier and fan control)
+mkdir ${ELABOX_HOME}/scripts
+cp ${SCRIPTS_DIR}/check_carrier.sh ${ELABOX_HOME}/scripts
+cp ${SCRIPTS_DIR}/control_fan.js ${ELABOX_HOME}/scripts
+chmod -R 777 ${ELABOX_HOME}/scripts
+
+# write the script to crontab
+(crontab -l 2>/dev/null || true; echo "*/5 * * * * /home/elabox/scripts/check_carrier.sh") | crontab -
+(sudo crontab -l 2>/dev/null || true; echo "*/5 * * * * node /home/elabox/scripts/control_fan.js") | sudo crontab -
+cd ${ELABOX_HOME}/scripts
+npm init 
+npm install onoff
+
+
+# Installing tor to get .onion address
+# sudo mkdir /var/lib/tor/elabox
+# sudo chown debian-tor:debian-tor /var/lib/tor/elabox
+# check if needed
+# sudo chmod g-s elabox /var/lib/tor
+
+# add the webserver and SSH to tor
+echo ""  | sudo tee -a /etc/tor/torrc
+echo "HiddenServiceDir /var/lib/tor/elabox/"  | sudo tee -a /etc/tor/torrc
+echo "HiddenServicePort 80 127.0.0.1:80" | sudo tee -a /etc/tor/torrc
+echo "HiddenServicePort 22 127.0.0.1:22" | sudo tee -a /etc/tor/torrc
+echo ""  | sudo tee -a /etc/tor/torrc
+sudo systemctl restart tor@default
+
 
 # create and starts the companion
 mkdir ${ELABOX_HOME}/{server,companion}
 
-# Install avahi-daemon
-echo "Installing avahi-daemon..."
 # Update hostname to elabox
 echo "Updating hostname..."
-sudo echo "elabox" > /etc/hostname
+echo "elabox" | sudo tee /etc/hostname
+echo "127.0.0.1 elabox" | sudo tee /etc/hosts
+
+systemctl restart systemd-logind.service
 
 # Installing and configuring webserver (nginx)
 # git clone the companion app to correct path
+copy build content of companion app to /var/www/html
 
 # git clone the server app to correct path
-
-
-
-# Installing tor to get .onion address
-mkdir /var/lib/tor/elabox
-sudo chown debian-tor:debian-tor /var/lib/tor/elabox
-# check if needed
-chmod g-s elabox
-
-# add the webserver and SSH to tor
-echo "\nHiddenServiceDir /var/lib/tor/elabox/" >> /etc/tor/torrc
-echo "HiddenServicePort 80 127.0.0.1:80" >> /etc/tor/torrc
-echo "HiddenServicePort 22 127.0.0.1:22\n" >>  /etc/tor/torrc 
-sudo systemctl restart tor@default
+cd /home/elabox/server
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-back-en
+npm install
+node index.js
 
 
 # connect from mac
