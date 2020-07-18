@@ -2,16 +2,24 @@
 echo "Installation of Elabox..."
 
 
+
+
+
+
+# TBD
+
+
+
+
+
 ## TO DO MANUALY 
 
-# After initiatinf the new pwd and login back to the machine
-# git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-binaries
-# -> new dir /home/ubuntu/elabox-binaries
-# Add elabox user
+# After initiating the new pwd and login back to the machine
+# Add elabox user and choose elabox as password
 sudo adduser elabox
 # Add elabox user to sudo group
 sudo usermod -aG sudo elabox
-
+# logout and login back as elabox
 
 ## RUN AS SCRIPT
 
@@ -19,10 +27,10 @@ sudo usermod -aG sudo elabox
 GITHUB_USER=ademcan
 GITHUB_TOKEN=42c8770f7a252e0b935f1e1c9feaad1c21a5e381
 ELABOX_HOME=/home/elabox
-BINARY_DIR=/home/ubuntu/elabox-binaries/binaries
-SCRIPTS_DIR=/home/ubuntu/elabox-binaries
+BINARY_DIR=/home/elabox/elabox-binaries/binaries
+SCRIPTS_DIR=/home/elabox/elabox-binaries
 
-# Format and mount the USB storage
+# Format and mount the USB storage to /home/elabox
 # check that USB is mounted on /dev/sda with sudo fdisk -l
 echo 'y' | sudo mkfs.ext4 /dev/sda
 # sudo chown -R ubuntu:ubuntu /home/elabox/
@@ -37,6 +45,8 @@ sudo chown -R elabox:elabox elabox/
 cd /home/elabox
 sudo rm -rf lost+found/
 
+# clone the elabox-binaries repo
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-binaries
 
 # configurations
 # cd ${ELABOX_HOME}
@@ -51,7 +61,7 @@ curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update && sudo apt install yarn
+echo 'Y' | sudo apt update && sudo apt install yarn
 
 echo 'Y' | sudo apt install fail2ban avahi-daemon tar nodejs make build-essential tor nginx zip
 # sudo npm install -g n
@@ -84,7 +94,7 @@ sudo ufw allow 20606
 sudo ufw allow 20608
 echo 'y' | sudo ufw enable
 
-sudo cp -R /home/ubuntu/elabox-binaries .
+#sudo cp -R /home/ubuntu/elabox-binaries .
 
 # 2 - create supernode and elabox directories
 mkdir ${ELABOX_HOME}/supernode ${ELABOX_HOME}/supernode/{did,ela,carrier}
@@ -115,9 +125,9 @@ chmod -R 777 ${ELABOX_HOME}/scripts
 # write the script to crontab
 (crontab -l 2>/dev/null || true; echo "*/5 * * * * /home/elabox/scripts/check_carrier.sh") | crontab -
 (sudo crontab -l 2>/dev/null || true; echo "*/5 * * * * node /home/elabox/scripts/control_fan.js") | sudo crontab -
-cd ${ELABOX_HOME}/scripts
-npm init 
-npm install onoff
+# cd ${ELABOX_HOME}/scripts
+# npm init 
+# npm install onoff
 
 
 # Installing tor to get .onion address
@@ -150,10 +160,14 @@ systemctl restart systemd-logind.service
 copy build content of companion app to /var/www/html
 
 # git clone the server app to correct path
-cd /home/elabox/server
-git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-back-en
+cd /home/elabox/
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-back-end server
 npm install
 node index.js
+
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-companion companion
+npm install
+npm start
 
 
 # connect from mac
