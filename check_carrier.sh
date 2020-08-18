@@ -1,5 +1,5 @@
 #!/bin/bash
-CARRIER_PATH=/home/ubuntu/supernode/carrier
+CARRIER_PATH=/home/elabox/supernode/carrier
 BOOTSTRAP_FILE=${CARRIER_PATH}/bootstrapd.conf
 CURRENT_IP=$(curl -s ipinfo.io/ip)
 echo "$CURRENT_IP"

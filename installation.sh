@@ -1,11 +1,6 @@
 #!/bin/bash
 echo "Installation of Elabox..."
 
-
-
-
-
-
 # TBD
 
 
@@ -44,6 +39,9 @@ cd /home/
 sudo chown -R elabox:elabox elabox/
 cd /home/elabox
 sudo rm -rf lost+found/
+
+# check that the external USB is properly mounted on /home/elabox
+lsblk
 
 # clone the elabox-binaries repo
 git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-binaries
