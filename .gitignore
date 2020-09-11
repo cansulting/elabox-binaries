@@ -3,4 +3,5 @@
 .gitconfig
 node_modules
 elastos
+elastos_did
 package-lock.json
