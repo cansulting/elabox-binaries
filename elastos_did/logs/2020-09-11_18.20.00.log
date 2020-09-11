@@ -1,8 +1,0 @@
-2020-09-11 18:20:00.356 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:58: Node version: v0.1.3
-2020-09-11 18:20:00.357 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:59: go version go1.12.10 linux/arm64
-2020-09-11 18:20:00.357 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:64: 1. BlockChain init
-2020-09-11 18:20:00.394 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:73: 2. SPV module init
-2020-09-11 18:20:00.464 [INF] SPVS /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/vendor/github.com/elastos/Elastos.ELA.SPV/sdk/service.go:464: SPV service started...
-2020-09-11 18:20:00.464 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:128: 3. Start the P2P networks
-2020-09-11 18:20:00.468 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:143: 4. --Initialize pow service
-2020-09-11 18:20:00.468 [INF] ELAD /home/ubuntu/dev/src/github.com/elastos/Elastos.ELA.SideChain.ID/main.go:164: 5. --Start the RPC service
