@@ -1,0 +1,28 @@
+{
+  "name": "elabox-binaries",
+  "version": "1.0.0",
+  "description": "Binaries for Elabox",
+  "main": "control_fan.js",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^4.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-binaries.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ademcan/elabox-binaries/issues"
+  },
+  "homepage": "https://github.com/ademcan/elabox-binaries#readme",
+  "husky": {
+    "hooks": {
+      "post merge": "sh post_install.sh"
+    }
+  }
+}

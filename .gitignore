@@ -1,3 +1,7 @@
 .DS_Store
 .bash_history
 .gitconfig
+node_modules
+elastos
+elastos_did
+package-lock.json
