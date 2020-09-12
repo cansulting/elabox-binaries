@@ -1,12 +1,6 @@
 #!/bin/bash
 echo "Installation of Elabox..."
 
-# TBD
-
-
-
-
-
 ## TO DO MANUALY 
 
 # After initiating the new pwd and login back to the machine
@@ -76,6 +70,7 @@ sudo ufw allow 22
 sudo ufw allow 80
 # elabox back-end port
 sudo ufw allow 3001
+sudo ufw allow 3002
 # ELA DPoS port
 sudo ufw allow 20339
 # ELA port for SPV peers
@@ -115,14 +110,16 @@ chmod 664 ${ELABOX_HOME}/supernode/carrier/bootstrapd.conf
 
 
 # get the scripts (carrier and fan control)
-mkdir ${ELABOX_HOME}/scripts
-cp ${SCRIPTS_DIR}/check_carrier.sh ${ELABOX_HOME}/scripts
-cp ${SCRIPTS_DIR}/control_fan.js ${ELABOX_HOME}/scripts
-chmod -R 777 ${ELABOX_HOME}/scripts
+# mkdir ${ELABOX_HOME}/scripts
+# cp ${SCRIPTS_DIR}/check_carrier.sh ${ELABOX_HOME}/scripts
+# cp ${SCRIPTS_DIR}/control_fan.js ${ELABOX_HOME}/scripts
+# chmod -R 777 ${ELABOX_HOME}/scripts
 
+# cd ${ELABOX_HOME}/scripts
+# sudo npm install -g onoff
 # write the script to crontab
-(crontab -l 2>/dev/null || true; echo "*/5 * * * * /home/elabox/scripts/check_carrier.sh") | crontab -
-(sudo crontab -l 2>/dev/null || true; echo "*/5 * * * * node /home/elabox/scripts/control_fan.js") | sudo crontab -
+# (crontab -l 2>/dev/null || true; echo "*/5 * * * * /home/elabox/scripts/check_carrier.sh") | crontab -
+# (sudo crontab -l 2>/dev/null || true; echo "*/5 * * * * node /home/elabox/scripts/control_fan.js") | sudo crontab -
 # cd ${ELABOX_HOME}/scripts
 # npm init 
 # npm install onoff
@@ -139,6 +136,7 @@ echo ""  | sudo tee -a /etc/tor/torrc
 echo "HiddenServiceDir /var/lib/tor/elabox/"  | sudo tee -a /etc/tor/torrc
 echo "HiddenServicePort 80 127.0.0.1:80" | sudo tee -a /etc/tor/torrc
 echo "HiddenServicePort 22 127.0.0.1:22" | sudo tee -a /etc/tor/torrc
+echo "HiddenServicePort 3001 127.0.0.1:3001" | sudo tee -a /etc/tor/torrc
 echo ""  | sudo tee -a /etc/tor/torrc
 sudo systemctl restart tor@default
 
@@ -150,23 +148,43 @@ mkdir ${ELABOX_HOME}/{server,companion}
 echo "Updating hostname..."
 echo "elabox" | sudo tee /etc/hostname
 echo "127.0.0.1 elabox" | sudo tee /etc/hosts
-
+sudo hostnamectl set-hostname elabox
+# hostnamectl to check
+/etc/init.d/avahi-daemon restart
 systemctl restart systemd-logind.service
 
 # Installing and configuring webserver (nginx)
 # git clone the companion app to correct path
-copy build content of companion app to /var/www/html
+
+
+
+# git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-back-end server
+# npm install
+# node index.js
+
+# increase size for nodemon files watcher
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-companion companion
+yarn
+yarn build
+sudo cp -R build /var/www/elabox/build
+sudo cp /home/elabox/elabox-master/default /etc/nginx/sites-available/default
+
+sudo npm install -g nodemon
+sudo npm install -g onoff
+
 
 # git clone the server app to correct path
 cd /home/elabox/
-git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-back-end server
+git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-master
+cd elabox-master
 npm install
-node index.js
-
-git clone https://42c8770f7a252e0b935f1e1c9feaad1c21a5e381@github.com/ademcan/elabox-companion companion
-npm install
-npm start
-
+sudo apt-get install chromium-browser
+npm install -g pm2
+pm2 start index.js --name ebmaster --watch . --time --log /home/elabox/ebmaster.log
+pm2 startup
+pm2 save
 
 # connect from mac
 ssh -o ProxyCommand="ncat --proxy-type socks5 --proxy 127.0.0.1:9150 %h %p" ubuntu@ydu7muawyhutwuhuwo4udz56xdp7zpp7jvetgggp7knw5qzafutfajad.onion
