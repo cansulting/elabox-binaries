@@ -113,8 +113,8 @@ sudo cp -R build /var/www/elabox/build
 /etc/init.d/nginx restart
 
 # sudo npm install -g onoff
-yarn global add onoff
-
+# yarn global add onoff
+sudo npm_config_user=root npm install -g onoff
 
 # git clone the server app to correct path
 cd /home/elabox/
@@ -146,15 +146,29 @@ sudo hostnamectl set-hostname elabox
 /etc/init.d/avahi-daemon restart
 systemctl restart systemd-logind.service
 
-
+# Reduce swappiness to 0
+echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf
 
 # Delete user ubuntu
 sudo deluser --remove-home ubuntu
 
+# add swapfile
+# https://askubuntu.com/questions/33697/how-do-i-add-swap-after-system-installation
+sudo mkdir -v /var/cache/swap
+cd /var/cache/swap
+sudo dd if=/dev/zero of=swapfile bs=1K count=4M
+sudo chmod 600 swapfile
+sudo mkswap swapfile
+sudo swapon swapfile
+# check
+top -bn1 | grep -i swap
+# add to fstab
+echo "/var/cache/swap/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+
+
 # Delete history
 history -c
 history -w
-
 
 
 # connect from mac
