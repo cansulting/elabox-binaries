@@ -16,6 +16,7 @@ BOOTSTRAPD_INPLACE_HASH=`sha1sum ${BOOTSTRAPD_INPLACE} | awk '{print $1;}'`
 DID_INPLACE_HASH=`sha1sum ${DID_INPLACE} | awk '{print $1;}'`
 ELA_INPLACE_HASH=`sha1sum ${ELA_INPLACE} | awk '{print $1;}'`
 
+echo "Running post_install"
 
 if [ "$DID_REPO_HASH" = "$DID_INPLACE_HASH" ]; then
     echo "DID NO CHANGE"
