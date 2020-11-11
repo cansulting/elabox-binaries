@@ -22,7 +22,7 @@
   "homepage": "https://github.com/ademcan/elabox-binaries#readme",
   "husky": {
     "hooks": {
-      "post merge": "sh post_install.sh"
+      "post-merge": "sh post_install.sh"
     }
   }
 }
