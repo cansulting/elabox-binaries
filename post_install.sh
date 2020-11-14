@@ -26,7 +26,7 @@ else
     kill $(pidof did)
     echo "KILLED DID"  
     sleep 30
-    cp ${DID_REPO} ${DID_INPLACE}
+    rm ${DID_INPLACE}; cp ${DID_REPO} ${DID_INPLACE}
     echo "UPDATED DID"  
     cd /home/elabox/supernode/did 
     nohup ./did > /dev/null 2>output &
