@@ -42,7 +42,7 @@ else
     kill $(pidof ela)
     echo "KILLED ELA"
     sleep 30
-    cp ${ELA_REPO} ${ELA_INPLACE}
+    rm ${ELA_INPLACE}; cp ${ELA_REPO} ${ELA_INPLACE}
     echo "UPDATED ELA"
 fi
 
