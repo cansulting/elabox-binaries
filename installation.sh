@@ -98,7 +98,17 @@ sudo ufw allow 20604
 sudo ufw allow 20606
 # DID node port
 sudo ufw allow 20608
+# Hive MONGO_HOST port
+sudo ufw allow 27020
 echo 'y' | sudo ufw enable
+
+##############################
+# Install docker
+##############################
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker elabox
 
 ##############################
 # Configure elabox-binaries
@@ -107,7 +117,7 @@ echo 'y' | sudo ufw enable
 # clone the elabox-binaries repo
 git clone https://elaboxx:elabox_2020@github.com/cansulting/elabox-binaries
 # 2 - create supernode and elabox directories
-mkdir ${ELABOX_HOME}/supernode ${ELABOX_HOME}/supernode/{did,ela,carrier}
+mkdir ${ELABOX_HOME}/supernode ${ELABOX_HOME}/supernode/{did,ela,carrier,hive}
 # get ela binary and config file
 cp ${BINARY_DIR}/ela ${ELABOX_HOME}/supernode/ela
 cp ${BINARY_DIR}/ela-cli ${ELABOX_HOME}/supernode/ela
@@ -124,6 +134,10 @@ cp ${BINARY_DIR}/ela-bootstrapd ${ELABOX_HOME}/supernode/carrier
 cp ${BINARY_DIR}/bootstrapd.conf ${ELABOX_HOME}/supernode/carrier
 chmod +x ${ELABOX_HOME}/supernode/carrier/ela-bootstrapd
 chmod 664 ${ELABOX_HOME}/supernode/carrier/bootstrapd.conf
+#copy hivenode tar and extract
+cp ${BINARY_DIR}/hive-v2.0.1.tar.gz ${ELABOX_HOME}/supernode
+cd ${ELABOX_HOME}/supernode
+tar -xzvf hive-v2.0.1.tar.gz -o hive
 
 ##############################
 # Configure elabox-companion
